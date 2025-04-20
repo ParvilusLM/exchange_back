@@ -1,0 +1,691 @@
+openapi: 3.0.3
+info:
+  title: EasyExchangeAPI, api pour une application de conversion de devises
+  version: 0.0.0
+paths:
+  /api-auth/:
+    post:
+      operationId: api_auth_create
+      tags:
+      - api-auth
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MyAuthToken'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MyAuthToken'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MyAuthToken'
+        required: true
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyAuthToken'
+          description: ''
+  /api-doc/schema/:
+    get:
+      operationId: api_doc_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api-doc
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/conversions:
+    get:
+      operationId: api_conversions_list
+      description: Liste des conversions de devise
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConversionDeDevise'
+          description: ''
+    post:
+      operationId: api_conversions_create
+      description: Créer une conversion de devise
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversionDeDevise'
+          description: ''
+  /api/conversions/{id}:
+    get:
+      operationId: api_conversions_retrieve
+      description: Récupérer une conversion de devise par ID
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversionDeDevise'
+          description: ''
+    put:
+      operationId: api_conversions_update
+      description: La modification d'une conversion de devise est réservée à l'administrateur
+        via l'admin django
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversionDeDevise'
+          description: ''
+    delete:
+      operationId: api_conversions_destroy
+      description: Supprimer une conversion de devise par ID
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/historiques:
+    get:
+      operationId: api_historiques_list
+      description: Liste des historiques de taux de change
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HistoriqueTauxDeChange'
+          description: ''
+    post:
+      operationId: api_historiques_create
+      description: L'historique est créé automatiquement lors de la création d'un
+        utilisateur
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoriqueTauxDeChange'
+          description: ''
+  /api/historiques/{id}:
+    get:
+      operationId: api_historiques_retrieve
+      description: Récupérer un historique de taux de change par ID
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoriqueTauxDeChange'
+          description: ''
+    put:
+      operationId: api_historiques_update
+      description: La modification d'un historique de taux de change est réservée
+        à l'administrateur via l'admin django
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoriqueTauxDeChange'
+          description: ''
+    delete:
+      operationId: api_historiques_destroy
+      description: La suppression d'un historique de taux de change est réservée à
+        l'administrateur via l'admin django
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/taux-de-change:
+    get:
+      operationId: api_taux_de_change_list
+      description: Liste des taux de change
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TauxDeChange'
+          description: ''
+    post:
+      operationId: api_taux_de_change_create
+      description: La creation d'un taux de change est reservée à l'administrateur
+        via l'admin django
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TauxDeChange'
+          description: ''
+  /api/taux-de-change/{id}:
+    get:
+      operationId: api_taux_de_change_retrieve
+      description: Récupérer un taux de change par ID
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TauxDeChange'
+          description: ''
+    put:
+      operationId: api_taux_de_change_update
+      description: La modification d'un taux de change est reservée à l'administrateur
+        via l'admin django
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TauxDeChange'
+          description: ''
+    delete:
+      operationId: api_taux_de_change_destroy
+      description: La suppression d'un taux de change est reservée à l'administrateur
+        via l'admin django
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/utilisateurs:
+    get:
+      operationId: api_utilisateurs_list
+      description: Liste des utilisateurs
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+          description: ''
+    post:
+      operationId: api_utilisateurs_create
+      description: Créer un utilisateur
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/utilisateurs/{id}:
+    get:
+      operationId: api_utilisateurs_retrieve
+      description: Récupérer un utilisateur par ID
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: api_utilisateurs_update
+      description: Modifier un utilisateur par ID
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    delete:
+      operationId: api_utilisateurs_destroy
+      description: Supprimer un utilisateur par ID
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    ConversionDeDevise:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        monnaie_locale:
+          type: string
+          maxLength: 20
+        monnaie_etrangere:
+          type: string
+          maxLength: 20
+        montant:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        montant_converti:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        taux_du_jour:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        date:
+          type: string
+          format: date-time
+          readOnly: true
+        historique_id:
+          type: integer
+      required:
+      - date
+      - historique_id
+      - id
+      - monnaie_etrangere
+      - monnaie_locale
+      - montant
+      - montant_converti
+      - taux_du_jour
+    HistoriqueTauxDeChange:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        utilisateur_id:
+          type: integer
+        cree_le:
+          type: string
+          format: date-time
+          readOnly: true
+        conversions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConversionDeDevise'
+          readOnly: true
+      required:
+      - conversions
+      - cree_le
+      - id
+      - utilisateur_id
+    MyAuthToken:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          writeOnly: true
+          title: Courriel
+        password:
+          type: string
+          writeOnly: true
+          title: Mot de passe
+        token:
+          type: string
+          readOnly: true
+          title: Jeton
+      required:
+      - email
+      - password
+      - token
+    TauxDeChange:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        monnaie_locale:
+          type: string
+          maxLength: 20
+        monnaie_etrangere:
+          type: string
+          maxLength: 20
+        taux_du_jour:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        est_reference:
+          type: boolean
+        modifie_le:
+          type: string
+          format: date-time
+          readOnly: true
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - id
+      - modifie_le
+      - monnaie_etrangere
+      - monnaie_locale
+      - slug
+      - taux_du_jour
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Adresse e-mail
+          maxLength: 254
+        pseudo:
+          type: string
+          maxLength: 60
+        password:
+          type: string
+          writeOnly: true
+          title: Mot de passe
+          maxLength: 128
+        cree_le:
+          type: string
+          format: date-time
+          readOnly: true
+        historique:
+          allOf:
+          - $ref: '#/components/schemas/HistoriqueTauxDeChange'
+          readOnly: true
+      required:
+      - cree_le
+      - email
+      - historique
+      - id
+      - password
+      - pseudo
+  securitySchemes:
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"

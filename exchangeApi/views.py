@@ -31,12 +31,20 @@ from django.db import transaction as db_transaction
 # Create your views here.
 class TauxDeChangeViewSet(viewsets.ViewSet):
 
+    @extend_schema(
+        responses= TauxDeChangeSerializer,
+        description="Liste des taux de change",
+    )
     def list(self, request):
         queryset = TauxDeChange.objects.all()
         serializer = TauxDeChangeSerializer(queryset, many=True)
         return Response(serializer.data)
     
 
+    @extend_schema(
+        responses= TauxDeChangeSerializer,
+        description="Récupérer un taux de change par ID",
+    )
     def retrieve(self, request, pk=None):
         queryset = TauxDeChange.objects.all()
         tauxDeChange = get_object_or_404(queryset, pk=pk)
@@ -44,12 +52,26 @@ class TauxDeChangeViewSet(viewsets.ViewSet):
         return Response(serializer.data)
     
 
+    @extend_schema(
+            description="La creation d'un taux de change est reservée à l'administrateur via l'admin django",
+            responses= TauxDeChangeSerializer,
+    )
     def create(self, request):
         pass
 
+
+    @extend_schema(
+            description="La modification d'un taux de change est reservée à l'administrateur via l'admin django",
+            responses= TauxDeChangeSerializer,
+    )
     def update(self, request, pk=None):
         pass
     
+
+    @extend_schema(
+        description="La suppression d'un taux de change est reservée à l'administrateur via l'admin django",
+        responses= TauxDeChangeSerializer,
+    )
     def destroy(self, request, pk=None):
         pass	
 
@@ -120,18 +142,21 @@ obtain_auth_token = ObtainAuthToken.as_view()
 
 #...
 class UserViewSet(viewsets.ViewSet):
-    parser_classes = [parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,]
-    
-    filter_backends = [DjangoFilterBackend]
     
     
-    
+    @extend_schema(
+        responses= UserSerializer,
+        description="Liste des utilisateurs",
+    ) 
     def list(self, request):
         queryset = Utilisateur.objects.all()
         serializer = UserSerializer(queryset, many=True)
         return Response(serializer.data)
     
-    
+    @extend_schema(
+        responses= UserSerializer,
+        description="Récupérer un utilisateur par ID",
+    )
     def retrieve(self, request, pk=None):
         if pk == 'me':
             user = request.user
@@ -144,7 +169,10 @@ class UserViewSet(viewsets.ViewSet):
             return Response(serializer.data) 
         
     
-
+    @extend_schema(
+        responses= UserSerializer,
+        description="Créer un utilisateur",
+    )
     def create(self, request, *args, **kwargs):
         serializer = UserSerializer(data=request.data)
 
@@ -155,6 +183,10 @@ class UserViewSet(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)	
 
     
+    @extend_schema(
+        responses= UserSerializer,
+        description="Modifier un utilisateur par ID",
+    )
     def update(self, request, pk=None):
         try:
             utilisateur = Utilisateur.objects.get(pk=pk)
@@ -171,7 +203,10 @@ class UserViewSet(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
-
+    @extend_schema(
+        responses= UserSerializer,
+        description="Supprimer un utilisateur par ID",
+    )
     def destroy(self, request, pk=None):
         try:
             utilisateur = Utilisateur.objects.get(pk=pk)
@@ -195,6 +230,8 @@ class UserViewSet(viewsets.ViewSet):
     def get_permissions(self):
         if self.action== 'retrieve' or self.action == 'update' or self.action == 'destroy':
             permission_classes = [IsAuthenticated]
+        elif self.action == 'list':
+            permission_classes = [IsAdminUser]
         else:
             permission_classes = []
         return [permission() for permission in permission_classes]
@@ -204,26 +241,52 @@ class UserViewSet(viewsets.ViewSet):
 #...
 class HistoriqueTauxDeChangeViewSet(viewsets.ViewSet):
     
+    @extend_schema(
+        responses= HistoriqueTauxDeChangeSerializer,
+        description="Liste des historiques de taux de change",
+    )
     def list(self, request):
         queryset = HistoriqueTauxDeChange.objects.all()
         serializer = HistoriqueTauxDeChangeSerializer(queryset, many=True)
         return Response(serializer.data)
-    
+
+    @extend_schema(
+        responses= HistoriqueTauxDeChangeSerializer,
+        description="Récupérer un historique de taux de change par ID",
+    )
     def retrieve(self, request, pk=None):
         queryset = HistoriqueTauxDeChange.objects.all()
         historique = get_object_or_404(queryset, pk=pk)
         serializer = HistoriqueTauxDeChangeSerializer(historique)
         return Response(serializer.data)
     
+
+    @extend_schema(
+        responses= HistoriqueTauxDeChangeSerializer,
+        description="L'historique est créé automatiquement lors de la création d'un utilisateur",
+    )
     def create(self, request):
         pass
 
+    @extend_schema(
+        responses= HistoriqueTauxDeChangeSerializer,
+        description="La modification d'un historique de taux de change est réservée à l'administrateur via l'admin django",
+    )
     def update(self, request, pk=None):
+        pass
+
+    @extend_schema(
+        responses= HistoriqueTauxDeChangeSerializer,
+        description="La suppression d'un historique de taux de change est réservée à l'administrateur via l'admin django",
+    )
+    def destroy(self, request, pk=None):
         pass
 
     def get_permissions(self):
         if self.action== 'retrieve' or self.action == 'update' or self.action == 'destroy':
             permission_classes = [IsAuthenticated]
+        elif self.action == 'list':
+            permission_classes = [IsAdminUser]
         else:
             permission_classes = []
         return [permission() for permission in permission_classes]
@@ -232,17 +295,30 @@ class HistoriqueTauxDeChangeViewSet(viewsets.ViewSet):
 #...
 class ConversionDeDeviseViewSet(viewsets.ViewSet):
     
+    @extend_schema(
+        responses= ConversionDeDeviseSerializer,
+        description="Liste des conversions de devise",
+    )
     def list(self, request):
         queryset = ConversionDeDevise.objects.all()
         serializer = ConversionDeDeviseSerializer(queryset, many=True)
         return Response(serializer.data)
     
+    @extend_schema(
+        responses= ConversionDeDeviseSerializer,
+        description="Récupérer une conversion de devise par ID",
+    )
     def retrieve(self, request, pk=None):
         queryset = ConversionDeDevise.objects.all()
         conversion = get_object_or_404(queryset, pk=pk)
         serializer = ConversionDeDeviseSerializer(conversion)
         return Response(serializer.data)
     
+
+    @extend_schema(
+        responses= ConversionDeDeviseSerializer,
+        description="Créer une conversion de devise",
+    )
     def create(self, request):
         # Vérification de l'utilisateur authentifié
         user = request.user
@@ -267,9 +343,18 @@ class ConversionDeDeviseViewSet(viewsets.ViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+    @extend_schema(
+        responses= ConversionDeDeviseSerializer,
+        description="La modification d'une conversion de devise est réservée à l'administrateur via l'admin django",
+    )
     def update(self, request, pk=None):
         pass
 
+    @extend_schema(
+        responses= ConversionDeDeviseSerializer,
+        description="Supprimer une conversion de devise par ID",
+    )
     def destroy(self, request, pk=None):
         try:
             conversion = ConversionDeDevise.objects.get(pk=pk)
@@ -289,9 +374,12 @@ class ConversionDeDeviseViewSet(viewsets.ViewSet):
             data["faillure"] = "suppression echouee"
         return Response(data=data)
 
+
     def get_permissions(self):
         if self.action== 'retrieve' or self.action == 'update' or self.action == 'destroy':
             permission_classes = [IsAuthenticated]
+        elif self.action == 'list':
+            permission_classes = [IsAdminUser]
         else:
             permission_classes = []
         return [permission() for permission in permission_classes]
