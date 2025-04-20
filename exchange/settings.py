@@ -161,6 +161,8 @@ SPECTACULAR_SETTINGS = {
 
 STATIC_URL = 'static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 INTERNAL_IPS = ['127.0.0.1']
 AUTH_USER_MODEL = 'exchangeApi.Utilisateur'
 
